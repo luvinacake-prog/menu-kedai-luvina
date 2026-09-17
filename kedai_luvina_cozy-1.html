@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kedai Luvina — Menu & Pesanan</title>
+<style>
+:root {
+  --brown:#5a321f; --brown2:#8d4d28; --cream:#fff8ea;
+  --paper:#fffaf1; --green:#20b957; --line:#ead9c2;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--brown);
+background:linear-gradient(#fff8eacc,#fff8eaf5),url('kedai_luvina_background.png') center top/cover fixed no-repeat;}
+.hero{min-height:310px;display:flex;align-items:flex-end;padding:28px 20px 34px;
+background:linear-gradient(180deg,#2d1a0c55,#2d1a0ccc),url('kedai_luvina_background.png') center top/cover no-repeat;}
+.sign{max-width:850px;margin:auto;width:100%;background:#e9c783eF;border:5px solid #9c642f;
+border-radius:18px;padding:22px 30px;text-align:center;box-shadow:0 12px 35px #0005;}
+.sign h1{font-family:Georgia,serif;font-size:48px;margin:0 0 6px;color:#4b2514}
+.sign p{margin:0;font-size:18px;font-weight:bold}
+.nav{position:sticky;top:0;z-index:10;background:#fff5e9ee;backdrop-filter:blur(8px);
+border-bottom:1px solid var(--line);box-shadow:0 3px 12px #0001}
+.nav-inner{max-width:1200px;margin:auto;padding:12px 18px;display:flex;gap:24px;align-items:center}
+.nav a{text-decoration:none;color:var(--brown);font-weight:bold}
+.container{max-width:1200px;margin:26px auto;padding:0 16px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:22px}
+.panel{background:#fffaf1eF;border:1px solid var(--line);border-radius:20px;padding:20px;
+box-shadow:0 8px 28px #5a321f18}
+h2{font-family:Georgia,serif;margin:0 0 8px;font-size:30px}
+.subtitle{margin:0 0 18px;color:#765d4e}
+.menu{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:16px;min-height:145px;
+display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 4px 12px #5a321f12}
+.card h3{font-size:18px;margin:0 0 10px}
+.price{font-weight:bold;color:#9a461e;font-size:16px}
+.add{margin-top:12px;width:100%;background:var(--brown2);font-size:15px}
+.cart{position:sticky;top:72px;align-self:start}
+.cart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.cart-items{max-height:420px;overflow:auto}
+.cart-row{display:flex;justify-content:space-between;gap:8px;padding:11px 0;border-bottom:1px dashed #ddc7aa}
+.cart-row b{display:block}
+.qty{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.qty button{padding:4px 9px;background:#ead8bd;color:var(--brown)}
+.empty{text-align:center;color:#8c7668;padding:30px 10px}
+.total{display:flex;justify-content:space-between;font-size:20px;font-weight:bold;padding:18px 0}
+.wa{width:100%;background:var(--green);font-size:17px;padding:13px}
+.note{font-size:12px;color:#8c7668;text-align:center;margin-top:10px}
+footer{text-align:center;padding:35px 15px;color:#765d4e}
+button{border:0;border-radius:10px;cursor:pointer;font-weight:bold}
+@media(max-width:1050px){.menu{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.cart{position:static}.menu{grid-template-columns:repeat(2,1fr)}.hero{min-height:250px}.sign h1{font-size:38px}}
+@media(max-width:480px){.menu{grid-template-columns:1fr}.sign{padding:18px}.sign h1{font-size:32px}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="sign">
+    <h1>🍰 Kedai Luvina</h1>
+    <p>Jajanan Enak, Mood Naik! ♡</p>
+  </div>
+</header>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#menu">🏠 Menu</a>
+    <a href="#keranjang">🛒 Keranjang</a>
+    <a href="https://wa.me/6285212361033" target="_blank">💬 WhatsApp</a>
+  </div>
+</nav>
+
+<main class="container">
+  <div class="layout">
+    <section class="panel" id="menu">
+      <h2>Daftar Menu</h2>
+      <p class="subtitle">Pilih menu favoritmu, lalu langsung pesan lewat WhatsApp!</p>
+      <div class="menu" id="menuGrid"></div>
+    </section>
+
+    <aside class="panel cart" id="keranjang">
+      <div class="cart-head"><h2>🛒 Keranjang</h2></div>
+      <div class="cart-items" id="cartItems"></div>
+      <div class="total"><span>Total</span><span id="total">Rp0</span></div>
+      <button class="wa" onclick="pesanWhatsApp()">💬 Pesan via WhatsApp</button>
+      <div class="note">Pesanan akan dikirim ke WhatsApp<br>085212361033</div>
+    </aside>
+  </div>
+</main>
+
+<footer>Terima kasih sudah memesan di Kedai Luvina ♡</footer>
+
+<script>
+const menu = [
+  {name:'Gabin Eskrim', price:10000, note:''},
+  {name:'Maklor', price:5000, note:''},
+  {name:'Soteng', price:11000, note:''},
+  {name:'Seblak', price:10000, note:'++'},
+  {name:'Pisang Siram', price:10000, note:''},
+  {name:'Cigor', price:10000, note:''},
+  {name:'Bakmie', price:11000, note:''},
+  {name:'Pisang Aroma', price:10000, note:''},
+  {name:'Lumpia Ubi', price:10000, note:''},
+  {name:'Cheese Roll', price:10000, note:''},
+  {name:'Martabak Mini', price:10000, note:''},
+  {name:'Jasuke', price:6000, note:''},
+  {name:'Nangka Sticky Rice', price:10000, note:''},
+  {name:'Tansuke Matcha/Tiramisu', price:10000, note:''},
+  {name:'Sop Buah', price:12000, note:''},
+  {name:'Es Campur', price:10000, note:''},
+  {name:'Es Teler', price:12000, note:''},
+  {name:'Thai Tea', price:8000, note:''},
+  {name:'Green Tea', price:8000, note:''},
+  {name:'Nutrisari', price:5000, note:''},
+  {name:'Teajus', price:2000, note:''},
+  {name:'Es Jeruk', price:6000, note:''}
+];
+let cart = [];
+
+function rupiah(n) {
+  return "Rp" + n.toLocaleString("id-ID");
+}
+
+function renderMenu() {
+  document.getElementById("menuGrid").innerHTML = menu.map((item,i) => `
+    <article class="card">
+      <div>
+        <h3>${item.name}</h3>
+        <div class="price">${rupiah(item.price)}${item.note || ""}</div>
+      </div>
+      <button class="add" onclick="addToCart(${i})">+ Tambah</button>
+    </article>
+  `).join("");
+}
+
+function addToCart(i) {
+  const found = cart.find(x => x.name === menu[i].name);
+  if (found) found.qty++;
+  else cart.push({...menu[i], qty:1});
+  renderCart();
+}
+
+function changeQty(i, delta) {
+  cart[i].qty += delta;
+  if (cart[i].qty <= 0) cart.splice(i,1);
+  renderCart();
+}
+
+function renderCart() {
+  const box = document.getElementById("cartItems");
+  if (!cart.length) {
+    box.innerHTML = '<div class="empty">Belum ada pesanan.<br>Yuk, pilih menu favoritmu!</div>';
+    document.getElementById("total").textContent = "Rp0";
+    return;
+  }
+  let total = 0;
+  box.innerHTML = cart.map((x,i) => {
+    const sub = x.price * x.qty;
+    total += sub;
+    return `<div class="cart-row">
+      <div><b>${x.name}</b>${rupiah(x.price)}${x.note || ""} × ${x.qty}<br><strong>${rupiah(sub)}</strong></div>
+      <div class="qty">
+        <button onclick="changeQty(${i},-1)">−</button>
+        <span>${x.qty}</span>
+        <button onclick="changeQty(${i},1)">+</button>
+      </div>
+    </div>`;
+  }).join("");
+  document.getElementById("total").textContent = rupiah(total);
+}
+
+function pesanWhatsApp() {
+  if (!cart.length) {
+    alert("Silakan pilih menu terlebih dahulu.");
+    return;
+  }
+  let total = 0;
+  let lines = ["Halo Kedai Luvina, saya ingin memesan:", ""];
+  cart.forEach(x => {
+    const sub = x.price * x.qty;
+    total += sub;
+    lines.push(`• ${x.name} x${x.qty} = ${rupiah(sub)}`);
+  });
+  lines.push("", `Total: ${rupiah(total)}`, "", "Mohon konfirmasi pesanan saya.");
+  const url = "https://wa.me/6285212361033?text=" + encodeURIComponent(lines.join("\n"));
+  window.open(url, "_blank");
+}
+
+renderMenu();
+renderCart();
+</script>
+</body>
+</html>
